@@ -57,7 +57,7 @@ const showForm = () => {
           </div>
         </div>
         <template v-if="viewLogin">
-          <Login />
+          <Login @cancel="restart" />
         </template>
         <template v-if="viewForm">
           <Form />
