@@ -13,13 +13,22 @@ const showList = computed(() => {
 })
 
 const getProfessionals = async () => {
-  const response = await axios.get(apiUrl + '/professionals', { headers: Auth.authHeader()})
+  const response = await axios.get(apiUrl + '/professionals', { headers: Auth.authHeader() })
   professionalList.value = response.data
 }
 
 const addProfessional = (professional) => {
-  console.log(professional)
   professionalList.value.push(professional)
+}
+
+const removeProfessional = async (id) => {
+  try {
+    const response = await axios.delete(apiUrl + '/professionals/' + id, { headers: Auth.authHeader() })
+    let deleted = response.data
+    professionalList.value = professionalList.value.filter(x => {x.id !== deleted.id})
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 onMounted(() => {
@@ -48,7 +57,7 @@ onMounted(() => {
           <td>{{ professional.speciality }}</td>
           <td class="has-text-centered">{{ professional.level }}</td>
           <td class="has-text-centered">
-            <a>
+            <a @click="removeProfessional(professional.id)">
               <span class="icon"><i class="fa fa-remove"></i></span>
             </a>
           </td>
