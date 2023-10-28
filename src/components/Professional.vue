@@ -1,5 +1,6 @@
 <script setup>
 import AddProfessional from './AddProfessional.vue'
+import Modal from './Modal.vue'
 
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
@@ -7,6 +8,9 @@ import Auth from '../services/auth'
 
 const apiUrl = import.meta.env.VITE_BACK_DIR
 const professionalList = ref([])
+const showModal = ref(false)
+let modalMsg = '¿Confirma eliminación del profesional seleccionado?'
+let idForDelete = 0
 
 const showList = computed(() => {
   return professionalList.value.length > 0
@@ -21,14 +25,25 @@ const addProfessional = (professional) => {
   professionalList.value.push(professional)
 }
 
+const showConfirm = (id) => {
+  showModal.value = true
+  idForDelete = id
+}
+
+const closeModal = () => {
+  showModal.value = false
+  idForDelete = 0
+}
+
 const removeProfessional = async (id) => {
   try {
     const response = await axios.delete(apiUrl + '/professionals/' + id, { headers: Auth.authHeader() })
     let deleted = response.data
-    professionalList.value = professionalList.value.filter(x => {x.id !== deleted.id})
+    professionalList.value = professionalList.value.filter(x => x.id !== deleted.id)
   } catch (e) {
     console.error(e)
   }
+  closeModal()
 }
 
 onMounted(() => {
@@ -57,7 +72,7 @@ onMounted(() => {
           <td>{{ professional.speciality }}</td>
           <td class="has-text-centered">{{ professional.level }}</td>
           <td class="has-text-centered">
-            <a @click="removeProfessional(professional.id)">
+            <a @click="showConfirm(professional.id)">
               <span class="icon"><i class="fa fa-remove"></i></span>
             </a>
           </td>
@@ -66,6 +81,8 @@ onMounted(() => {
     </table>
 
     <p v-else class="subtitle is-4 my-3 pl-4">No se han agregado profesionales</p>
+
+    <Modal :msg="modalMsg" :show="showModal" @close="closeModal()" @acepted="removeProfessional(idForDelete)" />
 
   </div>
 </template>
