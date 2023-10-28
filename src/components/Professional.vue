@@ -1,4 +1,6 @@
 <script setup>
+import AddProfessional from './AddProfessional.vue'
+
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
 import Auth from '../services/auth'
@@ -11,8 +13,13 @@ const showList = computed(() => {
 })
 
 const getProfessionals = async () => {
-  const response = await axios.get(apiUrl + '/professional', { headers: Auth.authHeader()})
+  const response = await axios.get(apiUrl + '/professionals', { headers: Auth.authHeader()})
   professionalList.value = response.data
+}
+
+const addProfessional = (professional) => {
+  console.log(professional)
+  professionalList.value.push(professional)
 }
 
 onMounted(() => {
@@ -24,6 +31,8 @@ onMounted(() => {
 <template>
   <div class="container">
 
+    <AddProfessional @new-prof="addProfessional" />
+
     <table class="table is-bordered is-hoverable is-fullwidth" v-if="showList">
       <thead>
         <tr>
@@ -34,7 +43,7 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="professional in proffesionalList">
+        <tr v-for="professional in professionalList">
           <td>{{ professional.name }}</td>
           <td>{{ professional.speciality }}</td>
           <td class="has-text-centered">{{ professional.level }}</td>

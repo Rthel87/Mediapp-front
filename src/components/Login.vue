@@ -26,7 +26,7 @@ const login = async () => {
     const response = await axios.post(apiUrl + '/login', auth)
     localStorage.removeItem('user_tk')
     localStorage.setItem('user_tk', response.data.jwt)
-    const userData = await axios.get(apiUrl + '/user/data', { headers: Auth.authHeader() })
+    const userData = await axios.get(apiUrl + '/users/data', { headers: Auth.authHeader() })
     redirecUser(userData.data)
     Auth.setCookie('userLogged', userString(userData.data))
     Auth.setCookie('range', userString(userData.data.Role))
