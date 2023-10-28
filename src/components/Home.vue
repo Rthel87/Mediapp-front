@@ -37,11 +37,13 @@ const showForm = () => {
             <a class="navbar-item title">MediApp</a>
             <span class="nabvar-burger">
               <span></span>
+              <span></span>
+              <span></span>
             </span>
           </div>
           <div class="navbar-menu">
             <div class="navbar-end">
-              <a class="navbar-item is-active" @click="restart">Inicio</a>
+              <a class="navbar-item" @click="restart">Inicio</a>
               <a class="navbar-item" @click="showLogin">Ingresar</a>
             </div>
           </div>
@@ -53,7 +55,7 @@ const showForm = () => {
       <div class="container">
         <div v-if="viewInit" class="columns">
           <div class="column is-half is-offset-one-quarter">
-            <a class="button is-info is-large is-fullwidth" href="#" @click="showForm">Solicitar asistencia médica</a>
+            <a class="button is-info is-large is-fullwidth is-inverted" href="#" @click="showForm">Solicitar asistencia médica</a>
           </div>
         </div>
         <template v-if="viewLogin">
