@@ -94,6 +94,7 @@ onMounted(() => {
     <table class="table is-bordered is-hoverable is-fullwidth" v-if="showList">
       <thead>
         <tr>
+          <th class="has-text-centered">N°</th>
           <th class="has-text-centered"><abbr title="Nombre Completo">Nombre</abbr></th>
           <th class="has-text-centered">Especialidad</th>
           <th class="has-text-centered"><abbr title="Nivel de severidad">Nivel</abbr></th>
@@ -101,7 +102,8 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="professional in professionalList">
+        <tr v-for="(professional, index) in professionalList">
+          <th class="has-text-centered">{{ index + 1 }}</th>
           <th><a @click="edit(professional)">{{ professional.name }}</a></th>
           <td>{{ professional.speciality }}</td>
           <td class="has-text-centered">{{ professional.level }}</td>
