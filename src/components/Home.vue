@@ -7,17 +7,21 @@ import { ref } from 'vue'
 const viewInit = ref(true)
 const viewForm = ref(false)
 const viewLogin = ref(false)
+const navTabs = ['Inicio', 'Ingresar']
+const currentTab = ref(navTabs[0])
 
 const restart = () => {
   viewForm.value = false
   viewLogin.value = false
   viewInit.value = true
+  currentTab.value = navTabs[0]
 }
 
 const showLogin = () => {
   viewLogin.value = true
   viewInit.value = false
   viewForm.value = false
+  currentTab.value = navTabs[1]
 }
 
 const showForm = () => {
@@ -34,7 +38,7 @@ const showForm = () => {
       <header class="navbar">
         <div class="container">
           <div class="navbar-brand">
-            <a class="navbar-item title">MediApp</a>
+            <a class="navbar-item title" @click="restart">MediApp</a>
             <span class="nabvar-burger">
               <span></span>
               <span></span>
@@ -43,8 +47,8 @@ const showForm = () => {
           </div>
           <div class="navbar-menu">
             <div class="navbar-end">
-              <a class="navbar-item" @click="restart">Inicio</a>
-              <a class="navbar-item" @click="showLogin">Ingresar</a>
+              <a class="navbar-item" :class="currentTab === navTabs[0] ? 'is-active' : ''" @click="restart">Inicio</a>
+              <a class="navbar-item" :class="currentTab === navTabs[1] ? 'is-active' : ''" @click="showLogin">Ingresar</a>
             </div>
           </div>
         </div>
