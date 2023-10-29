@@ -1,4 +1,5 @@
 <script setup>
+const props = defineProps(['tabs', 'current'])
 
 </script>
 
@@ -17,9 +18,9 @@
 
       <div class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="#">Profesionales</a>
-          <a class="navbar-item" href="#">Preguntas</a>
-          <a class="navbar-item" href="#">Asignaciones</a>
+          <template v-for="tab in props.tabs">
+            <a class="navbar-item" :class="tab === props.current ? 'is-active' : ''" @click="$emit('choice', tab)">{{ tab }}</a>
+          </template>
         </div>
       </div>
 
