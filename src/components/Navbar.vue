@@ -1,5 +1,16 @@
 <script setup>
+import { useRouter } from 'vue-router'
+import Auth from '../services/auth'
 
+const props = defineProps(['tabs', 'current'])
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('user_tk')
+  Auth.deleteCookie('userLogged')
+  Auth.deleteCookie('range')
+  router.push('/')
+}
 </script>
 
 <template>
@@ -17,9 +28,9 @@
 
       <div class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="#">Profesionales</a>
-          <a class="navbar-item" href="#">Preguntas</a>
-          <a class="navbar-item" href="#">Asignaciones</a>
+          <template v-for="tab in props.tabs">
+            <a class="navbar-item" :class="tab === props.current ? 'is-active' : ''" @click="$emit('choice', tab)">{{ tab }}</a>
+          </template>
         </div>
       </div>
 
@@ -27,7 +38,7 @@
         <div class="navbar-item">
           <div class="field">
             <p class="control">
-              <a class="button is-primary is-rounded is-inverted">Salir</a>
+              <a class="button is-primary is-rounded is-inverted" @click="logout">Salir</a>
             </p>
           </div>
         </div>
