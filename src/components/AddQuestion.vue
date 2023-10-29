@@ -177,7 +177,7 @@ onBeforeMount(() => {
     <div class="column">
       <div class="columns">
         <div class="column is-2 is-offset-3">
-          <button type="button" class="button is-outlined is-rounded is-fullwidth" @click="resetForm">Cancelar</button>
+          <button type="button" class="button is-dark is-outlined is-rounded is-fullwidth" @click="resetForm">Cancelar</button>
         </div>
         <div class="column is-2"></div>
         <div class="column is-2">

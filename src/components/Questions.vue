@@ -98,6 +98,7 @@ onMounted(() => {
     <table class="table is-bordered is-hoverable is-fullwidth" v-if="showList">
       <thead>
         <tr>
+          <th class="has-text-centered">N°</th>
           <th class="has-text-centered">Pregunta</th>
           <th class="has-text-centered">Respuestas</th>
           <th class="has-text-centered"><abbr title="Para cálculo de severidad">Puntos</abbr></th>
@@ -105,7 +106,8 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="question in questionsList">
+        <tr v-for="(question, index) in questionsList">
+          <th class="has-text-centered is-vcentered">{{ index + 1 }}</th>
           <th class="is-vcentered"><a @click="edit(question)">{{ question.question }}</a></th>
           <td>
             <ol class="pl-4">
