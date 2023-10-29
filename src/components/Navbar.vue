@@ -1,6 +1,16 @@
 <script setup>
-const props = defineProps(['tabs', 'current'])
+import { useRouter } from 'vue-router'
+import Auth from '../services/auth'
 
+const props = defineProps(['tabs', 'current'])
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem('user_tk')
+  Auth.deleteCookie('userLogged')
+  Auth.deleteCookie('range')
+  router.push('/')
+}
 </script>
 
 <template>
@@ -28,7 +38,7 @@ const props = defineProps(['tabs', 'current'])
         <div class="navbar-item">
           <div class="field">
             <p class="control">
-              <a class="button is-primary is-rounded is-inverted">Salir</a>
+              <a class="button is-primary is-rounded is-inverted" @click="logout">Salir</a>
             </p>
           </div>
         </div>
