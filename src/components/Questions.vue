@@ -46,7 +46,7 @@ const removeQuestion = async (id) => {
   try {
     const response = await axios.delete(apiUrl + '/questions/' + id, { headers: Auth.postHeader() })
     let deleted = response.data
-    questonsList.value = questionsList.value.filter(x => x.id !== deleted.id)
+    questionsList.value = questionsList.value.filter(x => x.id !== deleted.id)
   } catch (e) {
     console.error(e)
   }
@@ -60,8 +60,8 @@ const edit = (question) => {
 }
 
 const updateQuestion = (question) => {
-  questionList.value = questionList.value.filter(x => x.id !== question.id)
-  questionList.value.push(question)
+  questionsList.value = questionsList.value.filter(x => x.id !== question.id)
+  questionsList.value.push(question)
   update = false
   toEdit = {}
 }
@@ -105,23 +105,23 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="question in questionList">
-          <th><a @click="edit(question)">{{ question.question }}</a></th>
+        <tr v-for="question in questionsList">
+          <th class="is-vcentered"><a @click="edit(question)">{{ question.question }}</a></th>
           <td>
-            <ol>
+            <ol class="pl-4">
               <li>{{ question.answerOne }}</li>
               <li>{{ question.answerTwo }}</li>
               <li>{{ question.answerThree }}</li>
             </ol>
           </td>
-          <td>
+          <td class="has-text-centered">
             <ul>
               <li>1</li>
               <li>2</li>
               <li>3</li>
             </ul>
           </td>
-          <td>
+          <td class="has-text-centered is-vcentered">
             <a @click="showConfirm(question.id)">
               <span class="icon"><i class="fa fa-remove"></i></span>
             </a>
