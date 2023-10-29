@@ -67,7 +67,7 @@ const sendData = async () => {
         emit('updateProf', response.data)
         resetForm()
       } catch (e) {
-
+        console.log(e)
       }
     } else {
       try {
