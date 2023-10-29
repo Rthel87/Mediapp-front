@@ -8,9 +8,12 @@ import Auth from '../services/auth'
 
 const apiUrl = import.meta.env.VITE_BACK_DIR
 const professionalList = ref([])
+const showForm = ref(false)
 const showModal = ref(false)
 let modalMsg = '¿Confirma eliminación del profesional seleccionado?'
 let idForDelete = 0
+let update = false
+let toEdit = {}
 
 const showList = computed(() => {
   return professionalList.value.length > 0
@@ -46,6 +49,25 @@ const removeProfessional = async (id) => {
   closeModal()
 }
 
+const edit = (professional) => {
+  update = true
+  toEdit = professional
+  showForm.value = !showForm.value
+}
+
+const updateProfessional = (professional) => {
+  professionalList.value = professionalList.value.filter(x => x.id !== professional.id)
+  professionalList.value.push(professional)
+  update = false
+  toEdit = {}
+}
+
+const closeForm = () => {
+  showForm.value = !showForm.value
+  update = false
+  toEdit = {}
+}
+
 onMounted(() => {
   getProfessionals()
 })
@@ -55,7 +77,19 @@ onMounted(() => {
 <template>
   <div class="container">
 
-    <AddProfessional @new-prof="addProfessional" />
+    <AddProfessional v-if="showForm"
+      :for-edit="update"
+      :professional="toEdit"
+      @new-prof="addProfessional"
+      @update-prof="updateProfessional"
+      @close="closeForm"
+    />
+
+    <div v-else class="columns py-3 my-2">
+      <div class="column is-3 is-offset-9">
+        <button class="button is-rounded is-primary" type="button" name="button" @click="showForm = !showForm">Agregar profesional</button>
+      </div>
+    </div>
 
     <table class="table is-bordered is-hoverable is-fullwidth" v-if="showList">
       <thead>
@@ -68,7 +102,7 @@ onMounted(() => {
       </thead>
       <tbody>
         <tr v-for="professional in professionalList">
-          <td>{{ professional.name }}</td>
+          <th><a @click="edit(professional)">{{ professional.name }}</a></th>
           <td>{{ professional.speciality }}</td>
           <td class="has-text-centered">{{ professional.level }}</td>
           <td class="has-text-centered">
