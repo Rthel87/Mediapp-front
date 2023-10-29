@@ -1,5 +1,23 @@
 <script setup>
+import { ref, computed, onBeforeMount } from 'vue'
+import axios from 'axios'
 
+const apiUrl = import.meta.env.VITE_BACK_DIR
+const questionsList = ref([])
+const answers = ref([0, 0, 0, 0, 0])
+
+const totalScore = computed(() => {
+  return answers.value.reduce((a, b) => a + b)
+})
+
+onBeforeMount(async () => {
+  try {
+    const response = await axios.get(apiUrl +'/assignments/questions');
+    questionsList.value = response.data
+  } catch (e) {
+    console.log(e)
+  }
+})
 </script>
 
 <template>
@@ -51,6 +69,35 @@
             </div>
           </div>
         </div>
+
+        <hr>
+
+        <section class="section">
+          <h2 class="title is-3 pb-3 mb-2 has-text-dark ">Preguntas de diagnóstico:</h2>
+          <p></p>
+
+          <template v-for="(question, index) in questionsList">
+            <h3 class="subtitle is-4 has-text-dark">{{ index + 1 }}.- {{ question.question }}</h3>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" :name="'answer' + index" :value="1" v-model="answers[index]">
+                {{ question.answerOne}}
+              </label>
+            </div>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" :name="'answer' + index" :value="2" v-model="answers[index]">
+                {{ question.answerTwo }}
+              </label>
+            </div>
+            <div class="control">
+              <label class="radio">
+                <input type="radio" :name="'answer' + index" :value="3" v-model="answers[index]">
+                {{ question.answerThree }}
+              </label>
+            </div>
+          </template>
+        </section>
 
         <div class="columns">
           <div class="column is-3 is-offset-2">
