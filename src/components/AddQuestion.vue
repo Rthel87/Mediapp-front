@@ -3,7 +3,7 @@ import { ref, computed, onBeforeMount } from 'vue'
 import axios from 'axios'
 import Auth from '../services/auth'
 
-const props = defineProps(['forEdit', 'question'])
+const props = defineProps(['forEdit', 'question', 'count'])
 const emit = defineEmits(['newQuest', 'updateQuest', 'close'])
 const apiUrl = import.meta.env.VITE_BACK_DIR
 let questionSet = {
@@ -19,6 +19,10 @@ const errors = ref({
   answerOne: false,
   answerTwo: false,
   answerThree: false
+})
+
+const formDisabled = computed(() => {
+  return !props.forEdit && props.count === 5
 })
 
 const resetQuest = () => {
@@ -108,7 +112,7 @@ onBeforeMount(() => {
         <div class="field-body">
           <div class="field">
             <p class="control is-expanded">
-              <input class="input" :class="errors.question ? 'is-danger' : ''" v-model="questionSet.question" @input="resetValidity" type="text" placeholder="Ingrese pregunta">
+              <input class="input" :class="errors.question ? 'is-danger' : ''" v-model="questionSet.question" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="Ingrese pregunta">
             </p>
             <p v-if="errors.question" class="help is-danger">No se ha ingresado la pregunta</p>
           </div>
@@ -123,7 +127,7 @@ onBeforeMount(() => {
           <div class="field is-expanded">
             <div class="field has-addons">
               <p class="control is-expanded">
-                <input class="input" :class="errors.answerOne ? 'is-danger' : ''" v-model="questionSet.answerOne" @input="resetValidity" type="text" placeholder="Ingrese respuesta">
+                <input class="input" :class="errors.answerOne ? 'is-danger' : ''" v-model="questionSet.answerOne" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="Ingrese respuesta">
               </p>
               <p class="control">
                 <a class="button is-static">Puntos: 1</a>
@@ -142,7 +146,7 @@ onBeforeMount(() => {
           <div class="field is-expanded">
             <div class="field has-addons">
               <p class="control is-expanded">
-                <input class="input" :class="errors.answerTwo ? 'is-danger' : ''" v-model="questionSet.answerTwo" @input="resetValidity" type="text" placeholder="Ingrese respuesta">
+                <input class="input" :class="errors.answerTwo ? 'is-danger' : ''" v-model="questionSet.answerTwo" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="Ingrese respuesta">
               </p>
               <p class="control">
                 <a class="button is-static">Puntos: 2</a>
@@ -161,13 +165,14 @@ onBeforeMount(() => {
           <div class="field is-expanded">
             <div class="field has-addons">
               <p class="control is-expanded">
-                <input class="input" :class="errors.answerThree ? 'is-danger' : ''" v-model="questionSet.answerThree" @input="resetValidity" type="text" placeholder="Ingrese respuesta">
+                <input class="input" :class="errors.answerThree ? 'is-danger' : ''" v-model="questionSet.answerThree" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="Ingrese respuesta">
               </p>
               <p class="control">
                 <a class="button is-static">Puntos: 3</a>
               </p>
             </div>
             <p v-if="errors.answerThree" class="help is-danger">{{ errorMsg }}</p>
+            <p v-if="formDisabled" class="help is-danger">Alcanzado el número de preguntas requerido</p>
           </div>
         </div>
       </div>
@@ -181,7 +186,7 @@ onBeforeMount(() => {
         </div>
         <div class="column is-2"></div>
         <div class="column is-2">
-          <button type="button" class="button is-info is-rounded is-fullwidth" @click="sendData">{{ props.forEdit ? 'Actualizar' : 'Agregar'}}</button>
+          <button type="button" class="button is-info is-rounded is-fullwidth" @click="sendData" :disabled="formDisabled">{{ props.forEdit ? 'Actualizar' : 'Agregar'}}</button>
         </div>
       </div>
     </div>
