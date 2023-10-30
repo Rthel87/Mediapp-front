@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ref, computed, onBeforeMount } from 'vue'
 import Auth from '../services/auth'
 
-const props = defineProps(['forEdit', 'professional'])
+const props = defineProps(['forEdit', 'professional', 'levelUsed'])
 const emit = defineEmits(['newProf', 'updateProf', 'close'])
 const apiUrl = import.meta.env.VITE_BACK_DIR
 let professional = {
@@ -12,11 +12,27 @@ let professional = {
   level: 0
 }
 
+const severityList = [
+  {severity: 'Baja', level: 1},
+  {severity: 'Media', level: 2},
+  {severity: 'Alta', level: 3},
+  {severity: 'Urgencia', level: 4}
+]
+
 const errors = ref({
   name: false,
   speciality: false,
   level: false
 })
+
+const severityOptions = computed(() => {
+  if (!props.forEdit) {
+    return severityList.filter(x => props.levelUsed.indexOf(x.level) === -1)
+  }
+  return severityList
+})
+
+const formDisabled = computed(() => severityOptions.value.length === 0)
 
 const resetProf = () => {
   professional.name = ''
@@ -97,16 +113,17 @@ onBeforeMount(() => {
       <div class="field">
         <label class="label">Nombre</label>
         <div class="control">
-          <input class="input" :class="errors.name ? 'is-danger' : ''" v-model="professional.name" @input="resetValidity" type="text" placeholder="Nombre completo">
+          <input class="input" :class="errors.name ? 'is-danger' : ''" v-model="professional.name" @input="resetValidity" type="text" placeholder="Nombre completo" :disabled="formDisabled">
         </div>
         <p v-if="errors.name"  class="help is-danger">No se ha ingresado el nombre</p>
+        <p v-if="formDisabled" class="help is-danger">Ya se encuentran agreados los profesionales por nivel de severidad</p>
       </div>
     </div>
     <div class="column is-5">
       <div class="field">
         <label class="label">Especialidad</label>
         <div class="control">
-          <input class="input" :class="errors.speciality ? 'is-danger' : ''" v-model="professional.speciality" @input="resetValidity" type="text" placeholder="Nombre de la especilidad médica">
+          <input class="input" :class="errors.speciality ? 'is-danger' : ''" v-model="professional.speciality" @input="resetValidity" type="text" placeholder="Nombre de la especilidad médica" :disabled="formDisabled">
         </div>
         <p v-if="errors.speciality" class="help is-danger">No se ha ingresado la especialidad</p>
       </div>
@@ -116,11 +133,10 @@ onBeforeMount(() => {
         <label class="label">Severidad</label>
         <div class="control is-expanded">
           <div class="select is-fullwidth" :class="errors.level ? 'is-danger' : ''">
-            <select v-model="professional.level" name="level" @input="resetValidity">
-              <option :value="1">Baja</option>
-              <option :value="2">Media</option>
-              <option :value="3">Alta</option>
-              <option :value="4">Urgencia</option>
+            <select v-model="professional.level" name="level" @input="resetValidity" :disabled="formDisabled">
+              <template v-for="option in severityOptions">
+                <option :value="option.level">{{ option.severity }}</option>
+              </template>
             </select>
           </div>
         </div>
@@ -134,7 +150,7 @@ onBeforeMount(() => {
         </div>
         <div class="column is-2"></div>
         <div class="column is-2">
-          <button type="button" class="button is-info is-rounded is-fullwidth" @click="sendData">{{ props.forEdit ? 'Actualizar' : 'Agregar' }}</button>
+          <button type="button" class="button is-info is-rounded is-fullwidth" :disabled="formDisabled" @click="sendData">{{ props.forEdit ? 'Actualizar' : 'Agregar' }}</button>
         </div>
       </div>
     </div>

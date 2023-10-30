@@ -19,6 +19,10 @@ const showList = computed(() => {
   return professionalList.value.length > 0
 })
 
+const levelList = computed(() => {
+  return professionalList.value.map(x => x.level)
+})
+
 const getProfessionals = async () => {
   const response = await axios.get(apiUrl + '/professionals', { headers: Auth.authHeader() })
   professionalList.value = response.data
@@ -80,6 +84,7 @@ onMounted(() => {
     <AddProfessional v-if="showForm"
       :for-edit="update"
       :professional="toEdit"
+      :level-used="levelList"
       @new-prof="addProfessional"
       @update-prof="updateProfessional"
       @close="closeForm"

@@ -19,6 +19,8 @@ const showList = computed(() => {
   return questionsList.value.length > 0
 })
 
+const questionCount = computed(() => questionsList.value.length)
+
 const getQuestions = async () => {
   try {
     const response = await axios.get(apiUrl + '/questions', { headers: Auth.authHeader() })
@@ -84,6 +86,7 @@ onMounted(() => {
     <AddQuestion v-if="showForm"
       :for-edit="update"
       :question="toEdit"
+      :count="questionCount"
       @new-quest="addQuestion"
       @update-quest="updateQuestion"
       @close="closeForm"

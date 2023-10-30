@@ -33,6 +33,20 @@ const totalScore = computed(() => {
 const withoutQuest = computed(() => questionsList.value.length === 0)
 const withoutProf = computed(() => professionalsList.value.length === 0)
 
+const areAllQuestions = computed(() => questionsList.value.length === 5)
+const areAllLevels = computed(() => {
+  const allLevels = [1, 2, 3, 4]
+  const levelList = professionalsList.value.map(x => x.level)
+  const missingLevels = allLevels.filter(x => levelList.indexOf(x) === -1)
+  return missingLevels.length === 0
+})
+
+const formDisabled = computed(() => {
+  return !areAllQuestions.value || !areAllLevels.value
+})
+
+const showDetails = ref(false)
+
 const resetForm = () => {
   patient.value = {...{name: '', email: '', city: '', password: ''}}
   answers.value = [0, 0, 0, 0, 0]
@@ -136,7 +150,7 @@ onBeforeMount(async () => {
     <div class="card-content">
       <div class="content">
 
-        <h1 class="has-text-dark subtitle is-3">Bienvenido</h1>
+        <h1 class="has-text-dark title is-3">Bienvenido</h1>
         <p>Por favor, ingrese sus datos:</p>
 
         <div class="columns is-multiline">
@@ -144,7 +158,7 @@ onBeforeMount(async () => {
             <div class="field">
               <label class="label">Nombre:</label>
               <div class="control">
-                <input class="input" :class="errors.name ? 'is-danger' : ''" v-model="patient.name" @input="resetValidity" type="text" placeholder="ejemplo: Mario Castro">
+                <input class="input" :class="errors.name ? 'is-danger' : ''" v-model="patient.name" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="ejemplo: Mario Castro">
               </div>
               <p v-if="errors.name" class="help is-danger">No se ha ingresado el nombre del paciente</p>
             </div>
@@ -154,7 +168,7 @@ onBeforeMount(async () => {
             <div class="field">
               <label class="label">Correo electrónico:</label>
               <div class="control">
-                <input class="input" :class="errors.email ? 'is-danger' : ''" v-model="patient.email" @input="resetValidity" type="email" placeholder="ejemplo: mario@algo.com">
+                <input class="input" :class="errors.email ? 'is-danger' : ''" v-model="patient.email" @input="resetValidity" :disabled="formDisabled" type="email" placeholder="ejemplo: mario@algo.com">
               </div>
               <p v-if="errors.email" class="help is-danger">No se ha ingresado el correo electrónico</p>
             </div>
@@ -164,7 +178,7 @@ onBeforeMount(async () => {
             <div class="field">
               <label class="label">Ciudad:</label>
               <div class="control">
-                <input class="input" :class="errors.city ? 'is-danger' : ''" v-model="patient.city" @input="resetValidity" type="text" placeholder="ejemplo: Validivia">
+                <input class="input" :class="errors.city ? 'is-danger' : ''" v-model="patient.city" @input="resetValidity" :disabled="formDisabled" type="text" placeholder="ejemplo: Validivia">
               </div>
               <p v-if="errors.city" class="help is-danger">No se ha ingresado la ciudad del paciente</p>
             </div>
@@ -174,7 +188,7 @@ onBeforeMount(async () => {
             <div class="field">
               <label class="label">Password:</label>
               <div class="control">
-                <input class="input" :class="errors.password ? 'is-danger' : ''" v-model="patient.password" @input="resetValidity" type="password" >
+                <input class="input" :class="errors.password ? 'is-danger' : ''" v-model="patient.password" @input="resetValidity" :disabled="formDisabled" type="password" >
               </div>
               <p v-if="errors.password" class="help is-danger">Falta ingresar una clave de acceso</p>
             </div>
@@ -183,8 +197,8 @@ onBeforeMount(async () => {
 
         <hr>
 
-        <section class="section">
-          <h2 class="title is-3 pb-3 mb-2 has-text-dark ">Preguntas de diagnóstico:</h2>
+        <section class="section" v-if="!formDisabled">
+          <h2 class="subtitle is-3 pb-3 mb-2 has-text-dark ">Preguntas de diagnóstico:</h2>
           <p></p>
 
           <template v-for="(question, index) in questionsList">
@@ -211,12 +225,28 @@ onBeforeMount(async () => {
           </template>
         </section>
 
+        <section v-else class="section">
+          <p class="is-size-2 has-text-centered">No es posible realizar un diagnóstico en este momento. Comuníquese con el Administrador del Sistema para obtener una solución.</p>
+          <p class="is-size-6 has-text-centered has-text-link"><a @click="showDetails = !showDetails">{{ showDetails ? 'Ocultar' : 'Ver'}} detalles</a></p>
+          <div v-if="showDetails">
+            <br>
+            <div class="columns">
+              <div class="column is-half is-offset-3 has-background-info-light">
+                <ol>
+                  <li v-if="!areAllQuestions" class="has-text-danger-dark">No se han agregado todas las preguntas necesarias</li>
+                  <li v-if="!areAllLevels" class="has-text-danger-dark">Falta establecer profesionales en cada nivel de severidad</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div class="columns">
           <div class="column is-3 is-offset-2">
             <button class="button is-dark is-rounded is-outlined is-fullwidth" type="button" @click="closeForm">Cancelar</button>
           </div>
           <div class="column is-3 is-offset-2">
-            <button class="button is-info is-rounded is-fullwidth" type="button" name="button" @click="getAssignment">Continuar</button>
+            <button class="button is-info is-rounded is-fullwidth" type="button" name="button" @click="getAssignment" :disabled="formDisabled">Continuar</button>
           </div>
         </div>
 
