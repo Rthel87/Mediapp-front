@@ -18,7 +18,7 @@ const logout = () => {
     <div class="container">
 
       <div class="navbar-brand">
-        <a class="navbar-item title" href="#">MediApp</a>
+        <a class="navbar-item title" @click="logout">MediApp</a>
       </div>
       <div class="navbar-burger">
         <span></span>
