@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Auth from '../services/auth'
@@ -6,6 +7,7 @@ import Auth from '../services/auth'
 const router = useRouter()
 
 const apiUrl = import.meta.env.VITE_BACK_DIR
+const showError = ref(false)
 let auth = {
   email: '',
   password: ''
@@ -31,7 +33,8 @@ const login = async () => {
     Auth.setCookie('userLogged', userString(userData.data))
     Auth.setCookie('range', userString(userData.data.Role))
   } catch (e) {
-
+    console.error(e.response.data)
+    showError.value = true
   }
 }
 
@@ -44,6 +47,10 @@ const userString = (user) => {
   return string
 }
 
+const reset = () => {
+  showError.value = false
+}
+
 </script>
 
 <template>
@@ -52,14 +59,15 @@ const userString = (user) => {
       <div class="field">
         <label class="label">Email</label>
         <div class="control">
-          <input class="input" type="text" placeholder="direccion@ejemplo.com" v-model="auth.email">
+          <input class="input" :class="showError ? 'is-danger' : ''" @input="reset" type="text" placeholder="direccion@ejemplo.com" v-model="auth.email">
         </div>
       </div>
       <div class="field">
         <label class="label">Password</label>
         <div class="control">
-          <input class="input" type="password" v-model="auth.password">
+          <input class="input" :class="showError ? 'is-danger' : ''" @input="reset" type="password" v-model="auth.password">
         </div>
+        <p v-if="showError" class="help is-danger">Usuario no autorizado o contraseña errónea</p>
       </div>
     </div>
     <div class="columns">
