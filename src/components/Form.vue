@@ -1,4 +1,6 @@
 <script setup>
+import Modal from './Modal.vue'
+
 import { ref, computed, onBeforeMount } from 'vue'
 import axios from 'axios'
 
@@ -6,6 +8,7 @@ const apiUrl = import.meta.env.VITE_BACK_DIR
 const emit = defineEmits(['close'])
 const questionsList = ref([])
 const professionalsList = ref([])
+const assignment = ref({})
 const patient = ref({
   name: '',
   email: '',
@@ -20,6 +23,8 @@ const errors = ref({
   password: false,
   answers: [false, false, false, false, false]
 })
+const showModal = ref(false)
+const modalMsg = 'Asignación de profesional:'
 
 const totalScore = computed(() => {
   return answers.value.reduce((a, b) => a + b)
@@ -31,6 +36,7 @@ const withoutProf = computed(() => professionalsList.value.length === 0)
 const resetForm = () => {
   patient.value = {...{name: '', email: '', city: '', password: ''}}
   answers.value = [0, 0, 0, 0, 0]
+  assignment.value = {}
 }
 
 const closeForm = () => {
@@ -73,16 +79,42 @@ const resetValidity = () => {
 
 const getAssignment = () => {
   if (isValidForm()) {
-    console.log('El formulario es válido')
-  } else {
-    console.log('Hay errores en el formulario')
+    if (totalScore.value < 8) {
+      assignment.value = professionalsList.value.filter(x => x.level === 1)[0]
+    } else if (totalScore.value >= 8 && totalScore.value < 11) {
+      assignment.value = professionalsList.value.filter(x => x.level === 2)[0]
+    } else if (totalScore.value >= 11 && totalScore.value <= 13) {
+      assignment.value = professionalsList.value.filter(x => x.level === 3)[0]
+    } else {
+      assignment.value = professionalsList.value.filter(x => x.level === 4)[0]
+    }
+    showModal.value = true
+  }
+}
+
+const closeModal = () => {
+  showModal.value = false
+  assignment.value = {}
+}
+
+const sendAssignment = async () => {
+  try {
+    const data = {
+      patient: {...patient.value},
+      professional: {...assignment.value}
+    }
+    const response = await axios.post(apiUrl + '/public/assignment', data)
+    closeModal()
+    closeForm()
+  } catch (e) {
+    console.error(e)
   }
 }
 
 onBeforeMount(async () => {
   if (withoutQuest) {
     try {
-      const response = await axios.get(apiUrl +'/assignments/questions');
+      const response = await axios.get(apiUrl +'/public/questions');
       questionsList.value = response.data
     } catch (e) {
       console.log(e)
@@ -90,7 +122,7 @@ onBeforeMount(async () => {
   }
   if (withoutProf) {
     try {
-      const newResponse = await axios.get(apiUrl + '/assignments/professionals');
+      const newResponse = await axios.get(apiUrl + '/public/professionals');
       professionalsList.value = newResponse.data
     } catch (e) {
       console.log(e)
@@ -191,4 +223,7 @@ onBeforeMount(async () => {
       </div>
     </div>
   </div>
+
+  <Modal :show="showModal" :msg="modalMsg" :extra-msg="assignment.name" @close="closeModal" @acepted="sendAssignment" />
+
 </template>
