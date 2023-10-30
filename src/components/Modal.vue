@@ -1,5 +1,9 @@
 <script setup>
-const props = defineProps(['msg', 'show'])
+import { computed } from 'vue'
+
+const props = defineProps(['msg', 'extraMsg', 'show'])
+
+const showExtraMsg = computed(() => !!props.extraMsg)
 
 </script>
 
@@ -14,7 +18,13 @@ const props = defineProps(['msg', 'show'])
 
             <div class="columns is-multiline">
               <div class="column is-full">
-                <p class="title is-5">{{ msg }}</p>
+                <p class="title is-5" :class="!showExtraMsg ? 'has-text-centered' : 'has-text-dark'">{{ msg }}</p>
+                <p v-if="showExtraMsg">
+                  Se le ha pre-asignado el siguiente profesional: <strong>{{ extraMsg }}</strong>. <br><br>
+                  Si está de acuerdo, presione <i>Aceptar</i> para guardar esta asignación. Para volver a revisarla, ingrese a la aplicación con la dirección de correo y clave de acceso ingresada anteriormente.
+                  <br>
+                  Al presionar <i>Cancelar</i>, se elimina esta asiganción.
+                </p>
               </div>
             </div>
             <div class="columns">
@@ -23,7 +33,7 @@ const props = defineProps(['msg', 'show'])
               </div>
               <div class="column is-2"></div>
               <div class="column is-3">
-                <button class="button is-rounded is-danger is-fullwidth" type="button" @click="$emit('acepted')">Aceptar</button>
+                <button class="button is-rounded is-fullwidth" :class="showExtraMsg ? 'is-success' : 'is-danger'" type="button" @click="$emit('acepted')">Aceptar</button>
               </div>
             </div>
 
